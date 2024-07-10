@@ -20,7 +20,7 @@ with st.sidebar:
     
     panel_inputs = st.expander("Plate Panel Dimensions (Refer Figure 1)",expanded=False)
     with panel_inputs:
-        s = st.number_input("Shorter side of panel: s (in)",min_value=0.0001)
+        s = st.number_input("Shorter side of panel: s (in)",min_value=1e-6)
         l = st.number_input("Longer side of panel: l (in)",min_value=s)
         alpha = s/l
         st.write(f'Aspect ratio {alpha = }')
