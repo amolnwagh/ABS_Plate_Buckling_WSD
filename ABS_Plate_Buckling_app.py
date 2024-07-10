@@ -1,4 +1,5 @@
 import streamlit as st
+import ABS_Plate_Buckling_WSD.calculations.ABS_Plate_Buckling as ABS
 
 st.markdown("# ABS Plate Buckling Checks")
 st.markdown("### (WSD Method) - *July 2022 Edition*")
@@ -20,20 +21,19 @@ with st.sidebar:
     
     panel_inputs = st.expander("Plate Panel Dimensions (Refer Figure 1)",expanded=False)
     with panel_inputs:
-        s = st.number_input("Shorter side of panel: s (in)",min_value=1e-6)
-        l = st.number_input("Longer side of panel: l (in)",min_value=s)
-        alpha = s/l
-        st.write(f'Aspect ratio {alpha = }')
-        sigma_0_plate = st.number_input("Yield Stress for Plate Panel Material: sigma_0_plate (psi)",min_value=1e-6)
+        s = st.number_input("Shorter side of panel: s (cm)",min_value=1e-6)
+        l = st.number_input("Longer side of panel: l (cm)",min_value=s)
+        Alpha = ABS.calc_Alpha(s,l)
+        st.write(f'Aspect ratio {Alpha = }')
+        sigma_0_plate = st.number_input("Yield Stress for Plate Panel Material: sigma_0_plate (N/cm^2)",min_value=1e-6)
 
     stress_inputs = st.expander("Stress Data (Refer Figure 3)",expanded=False)
     with stress_inputs: 
-        st.markdown("## Load Data (Stresses)")
-        sigma_ax = st.number_input("Axial stress normal to shorter side (s): sigma_ax (psi)",min_value=1e-6)
-        sigma_ay = st.number_input("Axial stress normal to longer side (l): sigma_ay (psi)",min_value=1e-6)
-        sigma_bx = st.number_input("Bending stress normal to shorter side (s): sigma_bx (psi)",min_value=1e-6)
-        sigma_by = st.number_input("Bending stress normal to longer side (l): sigma_by (psi)",min_value=1e-6)
-        tau = st.number_input("Shear stress: tau (psi)",min_value=1e-6)
+        sigma_ax = st.number_input("Axial stress normal to shorter side (s): sigma_ax (N/cm^2)",min_value=1e-6)
+        sigma_ay = st.number_input("Axial stress normal to longer side (l): sigma_ay (N/cm^2)",min_value=1e-6)
+        sigma_bx = st.number_input("Bending stress normal to shorter side (s): sigma_bx (N/cm^2)",min_value=1e-6)
+        sigma_by = st.number_input("Bending stress normal to longer side (l): sigma_by (N/cm^2)",min_value=1e-6)
+        tau = st.number_input("Shear stress: tau (N/cm^2)",min_value=1e-6)
         sigma_xmax = sigma_ax + sigma_bx
         sigma_xmin = sigma_ax - sigma_bx
         sigma_ymax = sigma_ay + sigma_by
@@ -47,4 +47,5 @@ with st.sidebar:
     stiffener_inputs = st.expander("Stiffener Data (Refer Figure 2)",expanded=False)
     with stiffener_inputs:
         st.write("In Progress")
-        sigma_0_stf = st.number_input("Yield Stress for Stiffener: sigma_0_stf (psi)",min_value=1e-6)
+        st.selectbox("Select Stiffener Type", [*ABS.StiffenerType])
+        sigma_0_stf = st.number_input("Yield Stress for Stiffener: sigma_0_stf (N/cm^2)",min_value=1e-6)
