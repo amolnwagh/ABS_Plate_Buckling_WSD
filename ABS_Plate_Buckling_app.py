@@ -18,20 +18,21 @@ st.divider()
 with st.sidebar:
     st.markdown("# Inputs")
     
-    panel_inputs = st.expander("Plate Panel Dimensions (Refer Figure 1)",expanded=True)
+    panel_inputs = st.expander("Plate Panel Dimensions (Refer Figure 1)",expanded=False)
     with panel_inputs:
         s = st.number_input("Shorter side of panel: s (in)",min_value=0.0001)
         l = st.number_input("Longer side of panel: l (in)",min_value=s)
         alpha = s/l
         st.write(f'Aspect ratio {alpha = }')
+        sigma_0_plate = st.number_input("Yield Stress for Plate Panel Material: sigma_0_plate (psi)",min_value=1e-6)
 
-    stress_inputs = st.expander("Stress Data (Refer Figure 3)",expanded=True)
+    stress_inputs = st.expander("Stress Data (Refer Figure 3)",expanded=False)
     with stress_inputs: 
         st.markdown("## Load Data (Stresses)")
-        sigma_ax = st.number_input("Axial stress normal to shorter side (s): Sigma_ax (psi)",min_value=1e-6)
-        sigma_ay = st.number_input("Axial stress normal to longer side (l): Sigma_ay (psi)",min_value=1e-6)
-        sigma_bx = st.number_input("Bending stress normal to shorter side (s): Sigma_bx (psi)",min_value=1e-6)
-        sigma_by = st.number_input("Bending stress normal to longer side (l): Sigma_by (psi)",min_value=1e-6)
+        sigma_ax = st.number_input("Axial stress normal to shorter side (s): sigma_ax (psi)",min_value=1e-6)
+        sigma_ay = st.number_input("Axial stress normal to longer side (l): sigma_ay (psi)",min_value=1e-6)
+        sigma_bx = st.number_input("Bending stress normal to shorter side (s): sigma_bx (psi)",min_value=1e-6)
+        sigma_by = st.number_input("Bending stress normal to longer side (l): sigma_by (psi)",min_value=1e-6)
         tau = st.number_input("Shear stress: tau (psi)",min_value=1e-6)
         sigma_xmax = sigma_ax + sigma_bx
         sigma_xmin = sigma_ax - sigma_bx
@@ -43,6 +44,7 @@ with st.sidebar:
         st.write(f'{sigma_ymin = }')
         st.write(f'{tau = }')
         
-    stiffener_inputs = st.expander("Stiffener Data (Refer Figure 2)",expanded=True)
+    stiffener_inputs = st.expander("Stiffener Data (Refer Figure 2)",expanded=False)
     with stiffener_inputs:
         st.write("In Progress")
+        sigma_0_stf = st.number_input("Yield Stress for Stiffener: sigma_0_stf (psi)",min_value=1e-6)
