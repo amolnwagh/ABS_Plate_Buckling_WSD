@@ -20,6 +20,7 @@ class LoadCaseType(Enum):
 class Panel:
     
     """
+    load_case_type: LoadCaseType # Enumeration from Class StiffenerType
     stiffener_type: StiffenerType # Enumeration from Class StiffenerType
     s: float # length of shorter side of the plate panel (cm)
     l: float # length of longer side of the plate panel (cm)
@@ -33,6 +34,7 @@ class Panel:
     E: float = 2.06e7 # modulus of elasticity (N/cm^2)
     nu: float = 0.3 # poisson's ratio for steel
     """
+    load_case_type: LoadCaseType # Enumeration from Class StiffenerType
     stiffener_type: StiffenerType # Enumeration from Class StiffenerType
     s: float # length of shorter side of the plate panel (cm)
     l: float # length of longer side of the plate panel (cm)
