@@ -71,7 +71,8 @@ def test_calc_kappa():
     
     
 my_panel = ABS.Panel(
-    stiffener_type=ABS.StiffenerType.ANGLE,
+    load_case_type= ABS.LoadCaseType.NORMAL_OPERATION,
+    stiffener_type= ABS.StiffenerType.ANGLE,
     s = 60,
     l = 120,
     t = 1.2,
