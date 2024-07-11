@@ -84,6 +84,24 @@ def test_calc_stress_C():
     assert math.isclose(ABS.calc_stress_C(stress_0=10000, stress_E=5000),5000.0)
     assert math.isclose(ABS.calc_stress_C(stress_0=10000, stress_E=6000),6000.0) 
     assert math.isclose(ABS.calc_stress_C(stress_0=10000, stress_E=7000),6571.428571)
+
+    
+def test_calc_buckling_state_limit():
+    assert math.isclose(
+        ABS.calc_buckling_state_limit(
+            sigma_x_max = 100,
+            sigma_y_max = 50,
+            tau = 40,
+            sigma_C_x = 200,
+            sigma_C_y = 120,
+            tau_C = 150,
+            eta = 0.6  
+        ),
+        1.374228395   
+    )
+
+def test_calc_UC():
+    assert math.isclose(ABS.calc_UC(50,100), 0.5)
     
     
 my_panel = ABS.Panel(
@@ -121,6 +139,9 @@ def test_Panel_C1():
 
 def test_Panel_C2():
     assert math.isclose(my_panel.C2(),1.2)
+    
+def test_Panel_eta():
+    assert math.isclose(my_panel.eta(),0.6)
 
 def test_Panel_kappa_x():
     assert math.isclose(my_panel.kappa_x(),0.6666666667)
@@ -157,4 +178,14 @@ def test_Panel_sigma_C_x():
 
 def test_Panel_sigma_C_y():
     assert math.isclose(my_panel.sigma_C_y(),15751.72035)
+    
+def test_Panel_buckling_state_limit():
+    assert math.isclose(my_panel.buckling_state_limit(), 1.822777016)
+
+def test_Panel_buckling_state_limit_UC():
+    assert math.isclose(my_panel.buckling_state_limit_UC(), 1.822777016)
+
+def test_Panel_buckling_state_limit_UC_status():
+    assert my_panel.buckling_state_limit_UC_status() == "FAIL"
+    
 

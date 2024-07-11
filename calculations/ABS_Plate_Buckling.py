@@ -70,6 +70,9 @@ class Panel:
     def C2(self):
         return calc_C2(self.stiffener_type)
     
+    def eta(self):
+        return calc_eta(self.load_case_type)
+    
     def kappa_x(self):
         return calc_kappa(self.sigma_x_min(),self.sigma_x_max())
     
@@ -105,6 +108,26 @@ class Panel:
     
     def sigma_C_y(self):
         return calc_stress_C(self.sigma_0, self.sigma_E_y())
+    
+    def buckling_state_limit(self):
+        return calc_buckling_state_limit(
+            self.sigma_x_max(),
+            self.sigma_y_max(),
+            self.tau,
+            self.sigma_C_x(),
+            self.sigma_C_y(),
+            self.tau_C(),
+            self.eta()
+        )
+        
+    def buckling_state_limit_UC(self):
+        return calc_UC(self.buckling_state_limit(),1.0)
+    
+    def buckling_state_limit_UC_status(self):
+        if self.buckling_state_limit_UC() <= 1.0:
+            return "PASS"
+        else:
+            return "FAIL"
      
         
     
@@ -318,3 +341,35 @@ def calc_stress_C(stress_0:float, stress_E:float, P_r:float = 0.6) -> float:
     else:
         stress_C = stress_0 * (1 - P_r * (1 - P_r) * (stress_0 / stress_E))
         return stress_C
+    
+def calc_buckling_state_limit(sigma_x_max:float, sigma_y_max:float, tau:float, sigma_C_x:float, sigma_C_y:float, tau_C:float, eta:float) -> float:
+    """calculates buckling state limit
+
+    Args:
+        sigma_x_max (float): maximum compressive stress in the longitudinal direction (i.e. normal to shorter side), N/cm2
+        sigma_y_max (float): maximum compressive stress in the transverse direction (i.e. normal to longer side), N/cm2 
+        tau (float): edge shear stress, N/cm2 
+        sigma_C_x (float): critical buckling stress for uniaxial compression in the longitudinal direction, N/cm2
+        sigma_C_y (float): critical buckling stress for uniaxial compression in the transverse direction,N/cm2
+        tau_C (float): critical buckling stress for edge shear, N/cm2 
+        eta (float): maximum allowable strength utilization factor, as defined in Subsection 1/11 and 3/1.7
+
+    Returns:
+        float: buckling state limit of a plate panel, subjected to in-plane loads
+    """
+    buckling_state_limit = (sigma_x_max/(eta*sigma_C_x))**2 + (sigma_y_max/(eta*sigma_C_y))**2 + (tau/(eta*tau_C))**2
+    return buckling_state_limit
+
+def calc_UC(demand:float, capacity:float) -> float:
+    """Calculates UC value
+
+    Args:
+        demand (float)
+        capacity (float)
+
+    Returns:
+        float: unity check value (UC)
+    """
+    UC = demand/capacity
+    return UC
+    
