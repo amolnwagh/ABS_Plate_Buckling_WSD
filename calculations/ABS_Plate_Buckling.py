@@ -63,21 +63,49 @@ class Panel:
     
     def sigma_y_min(self):
         return calc_sigma_min(self.sigma_ay,self.sigma_by)
-        
-    def tau_0(self):
-        return calc_tau_0(self.sigma_0)
     
     def C1(self):
         return calc_C1(self.stiffener_type)
+    
+    def C2(self):
+        return calc_C2(self.stiffener_type)
+    
+    def kappa_x(self):
+        return calc_kappa(self.sigma_x_min(),self.sigma_x_max())
+    
+    def kappa_y(self):
+        return calc_kappa(self.sigma_y_min(),self.sigma_y_max())
           
     def k_s_tau(self):
         return calc_k_s_tau(self.Alpha(), self.C1())
     
+    def k_s_sigma_x(self):
+        return calc_k_s_sigma_x(self.C1(),self.kappa_x())
+    
+    def k_s_sigma_y(self):
+        return calc_k_s_sigma_y(self.C2(), self.Alpha(), self.kappa_y())
+    
+    def tau_0(self):
+        return calc_tau_0(self.sigma_0)
+        
     def tau_E(self):
         return calc_stress_E(self.k_s_tau(),self.t, self.s, self.E, self.nu)
     
+    def sigma_E_x(self):
+        return calc_stress_E(self.k_s_sigma_x(), self.t, self.s, self.E, self.nu)
+    
+    def sigma_E_y(self):
+        return calc_stress_E(self.k_s_sigma_y(), self.t, self.s, self.E, self.nu)
+    
     def tau_C(self):
         return calc_stress_C(self.tau_0(), self.tau_E())
+    
+    def sigma_C_x(self):
+        return calc_stress_C(self.sigma_0, self.sigma_E_x())
+    
+    def sigma_C_y(self):
+        return calc_stress_C(self.sigma_0, self.sigma_E_y())
+     
         
     
 def calc_Alpha(l:float,s:float) -> float:
@@ -137,68 +165,26 @@ def calc_C1(stiffener_type: StiffenerType) -> float:
         C1 = 1.0
         return C1
 
-
-def calc_tau_0(sigma_0:float) -> float:
-    """calculate shear strength of plate
-
-    Args:
-        sigma_0 (float): specified minimum yield point of plate, N/cm2 
-
-    Returns:
-        float: shear strength of plate, N/cm2
-    """
-    tau_0  = sigma_0/sqrt(3)
-    return tau_0
-
-
-def calc_k_s_tau(Alpha:float, C1:float) -> float:
-    """calculates boundary dependent constant for shear buckling
-
-    Args:
-        Alpha (float): aspect ratio of the plate panel
-        C1 (float): value of C1 based on Stiffener type
-
-    Returns:
-        float: boundary dependent constant for shear buckling
-    """
-    k_s = (4.0 * (1/Alpha)**2 + 5.34) * C1
-    return k_s
-
-  
-def calc_stress_E(k_s_stress:float, t:float, s:float, E:float = 2.06e7, nu:float=0.3) -> float:
-    """calculate elastic shear buckling stress
-
-    Args:
-        k_s_stress (float): boundary dependent constant
-        t (float): thickness of plating, cm
-        s (float): length of short plate edge, cm
-        E (float, optional): modulus of elasticity. Defaults to 2.06e7, N/cm2 .
-        nu (float, optional): Poisson's ratio. Defaults to 0.3 for steel.
-
-    Returns:
-        float: elastic shear buckling stress, N/cm2 
-    """
-    stress_E = k_s_stress * (((pi**2) * E)/(12 * (1 - (nu**2))) ) * (t/s)**2
-    return stress_E
-
-
-def calc_stress_C(stress_0:float, stress_E:float, P_r:float = 0.6) -> float:
-    """calculate critical buckling stress for edge shear
-    Args:
-        stress_0 (float): shear strength of plate, N/cm2
-        stress_E (float): elastic shear buckling stress, N/cm2
-        P_r (float, optional): proportional linear elastic limit of the structure. Defaults to 0.6 for steel.
-
-    Returns:
-        float: critical buckling stress for edge shear, N/cm2
-    """
-    if stress_E <= P_r * stress_0:
-        stress_C = stress_E
-        return stress_C
-    else:
-        stress_C = stress_0 * (1 - P_r * (1 - P_r) * (stress_0 / stress_E))
-        return stress_C
     
+def calc_C2(stiffener_type: StiffenerType) -> float:
+    """calculates value of C2 based on Stiffener type
+
+    Args:
+        stiffener_type (StiffenerType): Enumeration from Class StiffenerType
+        
+    Returns:
+        float: value of C2   
+    """
+    if stiffener_type in [StiffenerType.ANGLE, StiffenerType.TEE]:
+        C2 = 1.2
+        return C2
+    elif stiffener_type in [StiffenerType.FLAT_BAR, StiffenerType.BULB_PLATE]:
+        C2 = 1.1
+        return C2
+    else:
+        C2 = 1.0
+        return C2
+  
        
 def calc_eta(load_case_type: LoadCaseType) -> float:
     """calculates maximum allowable strength factor
@@ -234,24 +220,18 @@ def calc_kappa(sigma_min:float, sigma_max:float) -> float:
     except: ValueError
     
     
-def calc_C2(stiffener_type: StiffenerType) -> float:
-    """calculates value of C2 based on Stiffener type
+def calc_k_s_tau(Alpha:float, C1:float) -> float:
+    """calculates boundary dependent constant for shear buckling
 
     Args:
-        stiffener_type (StiffenerType): Enumeration from Class StiffenerType
-        
+        Alpha (float): aspect ratio of the plate panel
+        C1 (float): value of C1 based on Stiffener type
+
     Returns:
-        float: value of C2   
+        float: boundary dependent constant for shear buckling
     """
-    if stiffener_type in [StiffenerType.ANGLE, StiffenerType.TEE]:
-        C2 = 1.2
-        return C2
-    elif stiffener_type in [StiffenerType.FLAT_BAR, StiffenerType.BULB_PLATE]:
-        C2 = 1.1
-        return C2
-    else:
-        C2 = 1.0
-        return C2
+    k_s = (4.0 * (1/Alpha)**2 + 5.34) * C1
+    return k_s
     
 
 def calc_k_s_sigma_x(C1:float, kappa_x:float) -> float:
@@ -291,3 +271,50 @@ def calc_k_s_sigma_y(C2:float, Alpha:float, kappa_y:float) -> float:
         k_s_sigma_y = C2 * (1 + (1/(Alpha**2)))**2 * (1.675 - (0.675*kappa_y))
     return k_s_sigma_y
 
+
+def calc_tau_0(sigma_0:float) -> float:
+    """calculate shear strength of plate
+
+    Args:
+        sigma_0 (float): specified minimum yield point of plate, N/cm2 
+
+    Returns:
+        float: shear strength of plate, N/cm2
+    """
+    tau_0  = sigma_0/sqrt(3)
+    return tau_0
+
+
+def calc_stress_E(k_s_stress:float, t:float, s:float, E:float = 2.06e7, nu:float=0.3) -> float:
+    """calculate elastic shear buckling stress
+
+    Args:
+        k_s_stress (float): boundary dependent constant
+        t (float): thickness of plating, cm
+        s (float): length of short plate edge, cm
+        E (float, optional): modulus of elasticity. Defaults to 2.06e7, N/cm2 .
+        nu (float, optional): Poisson's ratio. Defaults to 0.3 for steel.
+
+    Returns:
+        float: elastic shear buckling stress, N/cm2 
+    """
+    stress_E = k_s_stress * (((pi**2) * E)/(12 * (1 - (nu**2))) ) * (t/s)**2
+    return stress_E
+
+
+def calc_stress_C(stress_0:float, stress_E:float, P_r:float = 0.6) -> float:
+    """calculate critical buckling stress for edge shear
+    Args:
+        stress_0 (float): shear strength of plate, N/cm2
+        stress_E (float): elastic shear buckling stress, N/cm2
+        P_r (float, optional): proportional linear elastic limit of the structure. Defaults to 0.6 for steel.
+
+    Returns:
+        float: critical buckling stress for edge shear, N/cm2
+    """
+    if stress_E <= P_r * stress_0:
+        stress_C = stress_E
+        return stress_C
+    else:
+        stress_C = stress_0 * (1 - P_r * (1 - P_r) * (stress_0 / stress_E))
+        return stress_C
