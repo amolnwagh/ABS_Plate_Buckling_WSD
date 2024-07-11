@@ -120,22 +120,22 @@ def test_Panel_C1():
     assert math.isclose(my_panel.C1(),1.1)
 
 def test_Panel_C2():
-    pass
+    assert math.isclose(my_panel.C2(),1.2)
 
 def test_Panel_kappa_x():
-    pass
+    assert math.isclose(my_panel.kappa_x(),0.6666666667)
 
 def test_Panel_kappa_y():
-    pass
+    assert math.isclose(my_panel.kappa_y(),0.6666666667)
        
 def test_Panel_k_s_tau():
     assert math.isclose(my_panel.k_s_tau(),6.974)
     
 def test_Panel_k_s_sigma_x():
-    pass
+    assert math.isclose(my_panel.k_s_sigma_x(),5.230188679)
 
 def test_Panel_k_s_sigma_y():
-    pass
+    assert math.isclose(my_panel.k_s_sigma_y(),2.296875)
 
 def test_Panel_tau_0():
     assert math.isclose(my_panel.tau_0(),13567.73133)
@@ -144,17 +144,17 @@ def test_Panel_tau_E():
     assert math.isclose(my_panel.tau_E(),51938.12434)
 
 def test_Panel_sigma_E_x():
-    pass
+    assert math.isclose(my_panel.sigma_E_x(),38951.27473)
 
 def test_Panel_sigma_E_y():
-    pass
+    assert math.isclose(my_panel.sigma_E_y(),17105.73263)
 
 def test_Panel_tau_C():
     assert math.isclose(my_panel.tau_C(),12717.10377)
     
 def test_Panel_sigma_C_x():
-    pass
+    assert math.isclose(my_panel.sigma_C_x(),20097.28723)
 
 def test_Panel_sigma_C_y():
-    pass
+    assert math.isclose(my_panel.sigma_C_y(),15751.72035)
 
