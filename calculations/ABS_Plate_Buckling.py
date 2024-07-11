@@ -20,27 +20,27 @@ class Panel:
     s: float # length of shorter side of the plate panel (cm)
     l: float # length of longer side of the plate panel (cm)
     t: float # thickness of plating (cm)
-    E: float = 2.06e7 # modulus of elasticity (N/cm^2)
-    nu: float = 0.3 # poisson's ratio for steel
     sigma_0: float  = 235000 # yeild stress of panel material (N/cm^2)
     sigma_ax: float = 1e-6 # axial stress normal to shorter side (N/cm^2)
     sigma_ay: float = 1e-6 # axial stress normal to longer side (N/cm^2)
     sigma_bx: float = 1e-6 # bending stress normal to shorter side (N/cm^2)
     sigma_by: float = 1e-6 # bending stress normal to longer side (N/cm^2)
     tau: float = 1e-6 # edge shear stress (N/cm^2)
+    E: float = 2.06e7 # modulus of elasticity (N/cm^2)
+    nu: float = 0.3 # poisson's ratio for steel
     """
     stiffener_type: StiffenerType #
     s: float # length of shorter side of the plate panel (cm)
     l: float # length of longer side of the plate panel (cm)
     t: float # thickness of plating (cm)
-    E: float = 2.06e7 # modulus of elasticity (N/cm^2)
-    nu: float = 0.3 # poisson's ratio for steel
     sigma_0: float  = 235000 # yeild stress of panel material (N/cm^2)
     sigma_ax: float = 1e-6 # axial stress normal to shorter side (N/cm^2)
     sigma_ay: float = 1e-6 # axial stress normal to longer side (N/cm^2)
     sigma_bx: float = 1e-6 # bending stress normal to shorter side (N/cm^2)
     sigma_by: float = 1e-6 # bending stress normal to longer side (N/cm^2)
     tau: float = 1e-6 # edge shear stress (N/cm^2)
+    E: float = 2.06e7 # modulus of elasticity (N/cm^2)
+    nu: float = 0.3 # poisson's ratio for steel
     
         
     def Alpha(self):
@@ -68,7 +68,7 @@ class Panel:
         return calc_k_s(self.Alpha(), self.C1())
     
     def tau_E(self):
-        return calc_tau_E(self.ks(),self.t, self.s, self.E, self.nu)
+        return calc_tau_E(self.k_s(),self.t, self.s, self.E, self.nu)
     
     def tau_C(self):
         return calc_tau_C(self.tau_0(), self.tau_E())
