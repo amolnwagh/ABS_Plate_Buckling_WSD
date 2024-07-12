@@ -23,8 +23,8 @@ with st.sidebar:
     with panel_inputs:
         s = st.number_input("Shorter side of panel: s (cm)",min_value=1e-6)
         l = st.number_input("Longer side of panel: l (cm)",min_value=s)
-        Alpha = ABS.calc_Alpha(s,l)
-        st.write(f'Aspect ratio {Alpha = }')
+        alpha = ABS.calc_alpha(s,l)
+        st.write(f'Aspect ratio {alpha = }')
         sigma_0_plate = st.number_input("Yield Stress for Plate Panel Material: sigma_0_plate (N/cm^2)",min_value=1e-6)
 
     stress_inputs = st.expander("Stress Data (Refer Figure 3)",expanded=False)

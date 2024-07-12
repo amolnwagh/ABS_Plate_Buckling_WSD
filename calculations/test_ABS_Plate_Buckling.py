@@ -1,9 +1,9 @@
 import ABS_Plate_Buckling_WSD.calculations.ABS_Plate_Buckling as ABS
 import math
 
-def test_calc_Alpha():
-    assert math.isclose(ABS.calc_Alpha(60,60), 1.0)
-    assert math.isclose(ABS.calc_Alpha(120,60), 2.0)
+def test_calc_alpha():
+    assert math.isclose(ABS.calc_alpha(60,60), 1.0)
+    assert math.isclose(ABS.calc_alpha(120,60), 2.0)
 
         
 def test_calc_sigma_max():
@@ -86,9 +86,9 @@ def test_calc_stress_C():
     assert math.isclose(ABS.calc_stress_C(stress_0=10000, stress_E=7000),6571.428571)
 
     
-def test_calc_buckling_state_limit():
+def test_calc_UC_buckling_state_limit():
     assert math.isclose(
-        ABS.calc_buckling_state_limit(
+        ABS.calc_UC_buckling_state_limit(
             sigma_x_max = 100,
             sigma_y_max = 50,
             tau = 40,
@@ -99,9 +99,6 @@ def test_calc_buckling_state_limit():
         ),
         1.374228395   
     )
-
-def test_calc_UC():
-    assert math.isclose(ABS.calc_UC(50,100), 0.5)
     
     
 my_panel = ABS.Panel(
@@ -119,8 +116,8 @@ my_panel = ABS.Panel(
 )
 
 
-def test_Panel_Alpha():
-    assert math.isclose(my_panel.Alpha(),2.0)
+def test_Panel_alpha():
+    assert math.isclose(my_panel.alpha(),2.0)
      
 def test_Panel_sigma_x_max():
     assert math.isclose(my_panel.sigma_x_max(),12000.0)
@@ -179,13 +176,8 @@ def test_Panel_sigma_C_x():
 def test_Panel_sigma_C_y():
     assert math.isclose(my_panel.sigma_C_y(),15751.72035)
     
-def test_Panel_buckling_state_limit():
-    assert math.isclose(my_panel.buckling_state_limit(), 1.822777016)
+def test_Panel_UC_buckling_state_limit():
+    assert math.isclose(my_panel.UC_buckling_state_limit(), 1.822777016)
 
-def test_Panel_buckling_state_limit_UC():
-    assert math.isclose(my_panel.buckling_state_limit_UC(), 1.822777016)
-
-def test_Panel_buckling_state_limit_UC_status():
-    assert my_panel.buckling_state_limit_UC_status() == "FAIL"
     
 

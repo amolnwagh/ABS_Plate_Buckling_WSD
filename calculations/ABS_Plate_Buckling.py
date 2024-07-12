@@ -49,8 +49,8 @@ class Panel:
     nu: float = 0.3 # poisson's ratio for steel
     
         
-    def Alpha(self):
-        return calc_Alpha(self.l, self.s)
+    def alpha(self):
+        return calc_alpha(self.l, self.s)
         
     def sigma_x_max(self):
         return calc_sigma_max(self.sigma_ax,self.sigma_bx)
@@ -80,13 +80,13 @@ class Panel:
         return calc_kappa(self.sigma_y_min(),self.sigma_y_max())
           
     def k_s_tau(self):
-        return calc_k_s_tau(self.Alpha(), self.C1())
+        return calc_k_s_tau(self.alpha(), self.C1())
     
     def k_s_sigma_x(self):
         return calc_k_s_sigma_x(self.C1(),self.kappa_x())
     
     def k_s_sigma_y(self):
-        return calc_k_s_sigma_y(self.C2(), self.Alpha(), self.kappa_y())
+        return calc_k_s_sigma_y(self.C2(), self.alpha(), self.kappa_y())
     
     def tau_0(self):
         return calc_tau_0(self.sigma_0)
@@ -109,8 +109,8 @@ class Panel:
     def sigma_C_y(self):
         return calc_stress_C(self.sigma_0, self.sigma_E_y())
     
-    def buckling_state_limit(self):
-        return calc_buckling_state_limit(
+    def UC_buckling_state_limit(self):
+        return calc_UC_buckling_state_limit(
             self.sigma_x_max(),
             self.sigma_y_max(),
             self.tau,
@@ -119,19 +119,10 @@ class Panel:
             self.tau_C(),
             self.eta()
         )
-        
-    def buckling_state_limit_UC(self):
-        return calc_UC(self.buckling_state_limit(),1.0)
-    
-    def buckling_state_limit_UC_status(self):
-        if self.buckling_state_limit_UC() <= 1.0:
-            return "PASS"
-        else:
-            return "FAIL"
      
         
     
-def calc_Alpha(l:float,s:float) -> float:
+def calc_alpha(l:float,s:float) -> float:
     """calculate aspect ratio of a plate panel defined according to ABS Requirements for Buckling (WSD Method)
 
     Args:
@@ -139,7 +130,7 @@ def calc_Alpha(l:float,s:float) -> float:
         s (float): length of shorter side of the plate panel
 
     Returns:
-        Alpha: aspect ratio of the plate panel
+        alpha: aspect ratio of the plate panel
     """
     aspect_ratio = l/s
     return aspect_ratio
@@ -243,17 +234,17 @@ def calc_kappa(sigma_min:float, sigma_max:float) -> float:
     except: ValueError
     
     
-def calc_k_s_tau(Alpha:float, C1:float) -> float:
+def calc_k_s_tau(alpha:float, C1:float) -> float:
     """calculates boundary dependent constant for shear buckling
 
     Args:
-        Alpha (float): aspect ratio of the plate panel
+        alpha (float): aspect ratio of the plate panel
         C1 (float): value of C1 based on Stiffener type
 
     Returns:
         float: boundary dependent constant for shear buckling
     """
-    k_s = (4.0 * (1/Alpha)**2 + 5.34) * C1
+    k_s = (4.0 * (1/alpha)**2 + 5.34) * C1
     return k_s
     
 
@@ -274,24 +265,24 @@ def calc_k_s_sigma_x(C1:float, kappa_x:float) -> float:
     return k_s_sigma_x
 
 
-def calc_k_s_sigma_y(C2:float, Alpha:float, kappa_y:float) -> float:
+def calc_k_s_sigma_y(C2:float, alpha:float, kappa_y:float) -> float:
     """calculates boundary dependant factor for stress sigma_y (normal to longer side)
     
     Args:
         C2 (float): value of C2 based on Stiffener type
-        Alpha (float): aspect ratio of the plate panel
+        alpha (float): aspect ratio of the plate panel
         kappa_y (float): _description_
 
     Returns:
         float: boundary dependant factor for stress sigma_y (normal to longer side)
     """
     if kappa_y < (1/3):
-        if 1.0 <= Alpha <= 2.0:
-            k_s_sigma_y = C2 * (1.0875 * (1 + (1/(Alpha**2)))**2 - (18/(Alpha**2))) * (1 + kappa_y) + (24/(Alpha**2))
-        elif Alpha > 2.0:
-            k_s_sigma_y = C2 * (1.0875 * (1 + (1/(Alpha**2)))**2 - (9/(Alpha**2))) * (1 + kappa_y) + (12/(Alpha**2))
+        if 1.0 <= alpha <= 2.0:
+            k_s_sigma_y = C2 * (1.0875 * (1 + (1/(alpha**2)))**2 - (18/(alpha**2))) * (1 + kappa_y) + (24/(alpha**2))
+        elif alpha > 2.0:
+            k_s_sigma_y = C2 * (1.0875 * (1 + (1/(alpha**2)))**2 - (9/(alpha**2))) * (1 + kappa_y) + (12/(alpha**2))
     elif kappa_y >= (1/3):
-        k_s_sigma_y = C2 * (1 + (1/(Alpha**2)))**2 * (1.675 - (0.675*kappa_y))
+        k_s_sigma_y = C2 * (1 + (1/(alpha**2)))**2 * (1.675 - (0.675*kappa_y))
     return k_s_sigma_y
 
 
@@ -342,8 +333,8 @@ def calc_stress_C(stress_0:float, stress_E:float, P_r:float = 0.6) -> float:
         stress_C = stress_0 * (1 - P_r * (1 - P_r) * (stress_0 / stress_E))
         return stress_C
     
-def calc_buckling_state_limit(sigma_x_max:float, sigma_y_max:float, tau:float, sigma_C_x:float, sigma_C_y:float, tau_C:float, eta:float) -> float:
-    """calculates buckling state limit
+def calc_UC_buckling_state_limit(sigma_x_max:float, sigma_y_max:float, tau:float, sigma_C_x:float, sigma_C_y:float, tau_C:float, eta:float) -> float:
+    """calculates buckling state limit UC
 
     Args:
         sigma_x_max (float): maximum compressive stress in the longitudinal direction (i.e. normal to shorter side), N/cm2
@@ -355,21 +346,8 @@ def calc_buckling_state_limit(sigma_x_max:float, sigma_y_max:float, tau:float, s
         eta (float): maximum allowable strength utilization factor, as defined in Subsection 1/11 and 3/1.7
 
     Returns:
-        float: buckling state limit of a plate panel, subjected to in-plane loads
+        float: buckling state limit UC of a plate panel, subjected to in-plane loads
     """
-    buckling_state_limit = (sigma_x_max/(eta*sigma_C_x))**2 + (sigma_y_max/(eta*sigma_C_y))**2 + (tau/(eta*tau_C))**2
-    return buckling_state_limit
-
-def calc_UC(demand:float, capacity:float) -> float:
-    """Calculates UC value
-
-    Args:
-        demand (float)
-        capacity (float)
-
-    Returns:
-        float: unity check value (UC)
-    """
-    UC = demand/capacity
-    return UC
+    UC_buckling_state_limit = (sigma_x_max/(eta*sigma_C_x))**2 + (sigma_y_max/(eta*sigma_C_y))**2 + (tau/(eta*tau_C))**2
+    return UC_buckling_state_limit
     
