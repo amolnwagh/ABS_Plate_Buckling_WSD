@@ -17,27 +17,27 @@ def test_calc_sigma_min():
     
     
 def test_calc_C1():
-    assert math.isclose(ABS.calc_C1(ABS.StiffenerType.ANGLE),1.1)
-    assert math.isclose(ABS.calc_C1(ABS.StiffenerType.TEE),1.1)
-    assert math.isclose(ABS.calc_C1(ABS.StiffenerType.FLAT_BAR),1)
-    assert math.isclose(ABS.calc_C1(ABS.StiffenerType.BULB_PLATE),1)
-    assert math.isclose(ABS.calc_C1(ABS.StiffenerType.PLATE_ELEM),1)
-    assert math.isclose(ABS.calc_C1(ABS.StiffenerType.WEB_PL_OF_STIFFENERS),1)
-    assert math.isclose(ABS.calc_C1(ABS.StiffenerType.LOCAL_PL_OF_CORRUGATED_PANELS),1)
+    assert math.isclose(ABS.calc_C1("ANGLE"),1.1)
+    assert math.isclose(ABS.calc_C1("TEE"),1.1)
+    assert math.isclose(ABS.calc_C1("FLAT BAR"),1)
+    assert math.isclose(ABS.calc_C1("BULB PLATE"),1)
+    assert math.isclose(ABS.calc_C1("PLATE ELEMENT"),1)
+    assert math.isclose(ABS.calc_C1("WEB PLATE OF STIFFENERS"),1)
+    assert math.isclose(ABS.calc_C1("LOCAL PLATE OF CORRUGATED PANELS"),1)
     
 def test_calc_C2():
-    assert math.isclose(ABS.calc_C2(ABS.StiffenerType.ANGLE),1.2)
-    assert math.isclose(ABS.calc_C2(ABS.StiffenerType.TEE),1.2)
-    assert math.isclose(ABS.calc_C2(ABS.StiffenerType.FLAT_BAR),1.1)
-    assert math.isclose(ABS.calc_C2(ABS.StiffenerType.BULB_PLATE),1.1)
-    assert math.isclose(ABS.calc_C2(ABS.StiffenerType.PLATE_ELEM),1)
-    assert math.isclose(ABS.calc_C2(ABS.StiffenerType.WEB_PL_OF_STIFFENERS),1)
-    assert math.isclose(ABS.calc_C2(ABS.StiffenerType.LOCAL_PL_OF_CORRUGATED_PANELS),1)         
+    assert math.isclose(ABS.calc_C2("ANGLE"),1.2)
+    assert math.isclose(ABS.calc_C2("TEE"),1.2)
+    assert math.isclose(ABS.calc_C2("FLAT BAR"),1.1)
+    assert math.isclose(ABS.calc_C2("BULB PLATE"),1.1)
+    assert math.isclose(ABS.calc_C2("PLATE ELEMENT"),1)
+    assert math.isclose(ABS.calc_C2("WEB PLATE OF STIFFENERS"),1)
+    assert math.isclose(ABS.calc_C2("LOCAL PLATE OF CORRUGATED PANELS"),1)         
 
 
 def test_calc_eta():
-    assert math.isclose(ABS.calc_eta(ABS.LoadCaseType.NORMAL_OPERATION),0.6)
-    assert math.isclose(ABS.calc_eta(ABS.LoadCaseType.SEVERE_STORM),0.8)
+    assert math.isclose(ABS.calc_eta("NORMAL OPERATION"),0.6)
+    assert math.isclose(ABS.calc_eta("SEVERE STORM"),0.8)
     
 
 def test_calc_kappa():
@@ -102,8 +102,8 @@ def test_calc_UC_buckling_state_limit():
     
     
 my_panel = ABS.Panel(
-    load_case_type= ABS.LoadCaseType.NORMAL_OPERATION,
-    stiffener_type= ABS.StiffenerType.ANGLE,
+    load_case_type= "NORMAL OPERATION",
+    stiffener_type= "ANGLE",
     s = 60,
     l = 120,
     t = 1.2,

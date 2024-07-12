@@ -15,13 +15,16 @@ class StiffenerType(Enum):
 class LoadCaseType(Enum):
     NORMAL_OPERATION = 1
     SEVERE_STORM = 2
+    
+valid_stiffener_types = ("ANGLE","TEE","FLAT BAR","BULB PLATE","PLATE ELEMENT","WEB PLATE OF STIFFENERS","LOCAL PLATE OF CORRUGATED PANELS")
+valid_load_case_types = ("NORMAL OPERATION","SEVERE STORM")
 
 @dataclass
 class Panel:
     
     """
-    load_case_type: LoadCaseType # Enumeration from Class StiffenerType
-    stiffener_type: StiffenerType # Enumeration from Class StiffenerType
+    load_case_type: str # any item from the list "valid_load_case_types"
+    stiffener_type: str # any item from the list "valid_stiffener_types"
     s: float # length of shorter side of the plate panel (cm)
     l: float # length of longer side of the plate panel (cm)
     t: float # thickness of plating (cm)
@@ -29,13 +32,13 @@ class Panel:
     sigma_ay: float # axial stress normal to longer side (N/cm^2)
     sigma_bx: float # bending stress normal to shorter side (N/cm^2)
     sigma_by: float # bending stress normal to longer side (N/cm^2)
-    sigma_0: float  = 235000 # yeild stress of panel material (N/cm^2)
     tau: float = 1e-6 # edge shear stress (N/cm^2)
+    sigma_0: float  = 235000 # yeild stress of panel material (N/cm^2)
     E: float = 2.06e7 # modulus of elasticity (N/cm^2)
     nu: float = 0.3 # poisson's ratio for steel
     """
-    load_case_type: LoadCaseType # Enumeration from Class StiffenerType
-    stiffener_type: StiffenerType # Enumeration from Class StiffenerType
+    load_case_type: str # any item from the list "valid_load_case_types"
+    stiffener_type: str # any item from the list "valid_stiffener_types"
     s: float # length of shorter side of the plate panel (cm)
     l: float # length of longer side of the plate panel (cm)
     t: float # thickness of plating (cm)
@@ -43,8 +46,8 @@ class Panel:
     sigma_ay: float # axial stress normal to longer side (N/cm^2)
     sigma_bx: float # bending stress normal to shorter side (N/cm^2)
     sigma_by: float # bending stress normal to longer side (N/cm^2)
+    tau: float # edge shear stress (N/cm^2)
     sigma_0: float  = 235000 # yeild stress of panel material (N/cm^2)
-    tau: float = 1e-6 # edge shear stress (N/cm^2)
     E: float = 2.06e7 # modulus of elasticity (N/cm^2)
     nu: float = 0.3 # poisson's ratio for steel
     
@@ -164,58 +167,64 @@ def calc_sigma_min(sigma_a:float, sigma_b: float) -> float:
     return min_stress
 
 
-def calc_C1(stiffener_type: StiffenerType) -> float:
+def calc_C1(stiffener_type: str) -> float:
     """calculates value of C1 based on Stiffener type
 
     Args:
-        stiffener_type (StiffenerType): Enumeration from Class StiffenerType
+        stiffener_type (str): any item from the list "valid_stiffener_types"
+        
     Returns:
         float: value of C1
     """
-    if stiffener_type in [StiffenerType.ANGLE, StiffenerType.TEE]:
-        C1 = 1.1
+    if stiffener_type in  valid_stiffener_types:
+        if stiffener_type in ("ANGLE", "TEE"):
+            C1 = 1.1
+        else:
+            C1 = 1.0
         return C1
     else:
-        C1 = 1.0
-        return C1
+        raise ValueError(f"Invalid stiffener type provided. Acceptable stiffener types are: {valid_stiffener_types}")
 
     
-def calc_C2(stiffener_type: StiffenerType) -> float:
+def calc_C2(stiffener_type: str) -> float:
     """calculates value of C2 based on Stiffener type
 
     Args:
-        stiffener_type (StiffenerType): Enumeration from Class StiffenerType
+        stiffener_type (str): any item from the list "valid_stiffener_types"
         
     Returns:
         float: value of C2   
     """
-    if stiffener_type in [StiffenerType.ANGLE, StiffenerType.TEE]:
-        C2 = 1.2
-        return C2
-    elif stiffener_type in [StiffenerType.FLAT_BAR, StiffenerType.BULB_PLATE]:
-        C2 = 1.1
+    if stiffener_type in  valid_stiffener_types:
+        if stiffener_type in ("ANGLE", "TEE"):
+            C2 = 1.2
+        elif stiffener_type in ("FLAT BAR", "BULB PLATE"):
+            C2 = 1.1
+        else:
+            C2 = 1.0
         return C2
     else:
-        C2 = 1.0
-        return C2
+        raise ValueError(f"Invalid stiffener type provided. Acceptable stiffener types are: {valid_stiffener_types}")
   
        
-def calc_eta(load_case_type: LoadCaseType) -> float:
+def calc_eta(load_case_type: str) -> float:
     """calculates maximum allowable strength factor
 
     Args:
-        load_case_type (LoadCaseType): Enumeration from Class LoadCaseType
-
+        load_case_type (str): any item from the list "valid_load_case_types"
+        
     Returns:
         float: maximum allowable strength factor, eta
     """
     phi = 1.0 # Adjustment factor ABS Buckling Requirements (WSD), Cl 3-1.7
-    if load_case_type == LoadCaseType.NORMAL_OPERATION:
-        eta = 0.6 * phi
+    if load_case_type in valid_load_case_types:
+        if load_case_type == "NORMAL OPERATION":
+            eta = 0.6 * phi
+        else:
+            eta = 0.8 * phi
         return eta
     else:
-        eta = 0.8 * phi
-        return eta
+        raise ValueError(f"Invalid load case type provided. Acceptable load case types are: {valid_load_case_types}")
 
     
 def calc_kappa(sigma_min:float, sigma_max:float) -> float:
