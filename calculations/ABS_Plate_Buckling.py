@@ -2,19 +2,7 @@ import eng_module.columns as columns
 from dataclasses import dataclass
 from enum import Enum
 from math import pi, sqrt
-
-class StiffenerType(Enum):
-    ANGLE = 1
-    TEE = 2
-    FLAT_BAR = 3
-    BULB_PLATE = 4
-    PLATE_ELEM = 5
-    WEB_PL_OF_STIFFENERS = 6
-    LOCAL_PL_OF_CORRUGATED_PANELS = 7
-    
-class LoadCaseType(Enum):
-    NORMAL_OPERATION = 1
-    SEVERE_STORM = 2
+from handcalcs.decorator import handcalc
     
 valid_stiffener_types = ("ANGLE","TEE","FLAT BAR","BULB PLATE","PLATE ELEMENT","WEB PLATE OF STIFFENERS","LOCAL PLATE OF CORRUGATED PANELS")
 valid_load_case_types = ("NORMAL OPERATION","SEVERE STORM")
@@ -50,11 +38,10 @@ class Panel:
     sigma_0: float  = 235000 # yeild stress of panel material (N/cm^2)
     E: float = 2.06e7 # modulus of elasticity (N/cm^2)
     nu: float = 0.3 # poisson's ratio for steel
-    
-        
+       
     def alpha(self):
         return calc_alpha(self.l, self.s)
-        
+       
     def sigma_x_max(self):
         return calc_sigma_max(self.sigma_ax,self.sigma_bx)
     
@@ -124,7 +111,7 @@ class Panel:
         )
      
         
-    
+@handcalc() 
 def calc_alpha(l:float,s:float) -> float:
     """calculate aspect ratio of a plate panel defined according to ABS Requirements for Buckling (WSD Method)
 
@@ -139,6 +126,7 @@ def calc_alpha(l:float,s:float) -> float:
     return aspect_ratio
 
 
+@handcalc()
 def calc_sigma_max(sigma_a:float, sigma_b: float) -> float:
     """calulates maximum normal stress
 
@@ -153,6 +141,7 @@ def calc_sigma_max(sigma_a:float, sigma_b: float) -> float:
     return max_stress
 
 
+@handcalc()
 def calc_sigma_min(sigma_a:float, sigma_b: float) -> float:
     """calulates minimum normal stress
 
@@ -167,6 +156,7 @@ def calc_sigma_min(sigma_a:float, sigma_b: float) -> float:
     return min_stress
 
 
+@handcalc()
 def calc_C1(stiffener_type: str) -> float:
     """calculates value of C1 based on Stiffener type
 
@@ -185,7 +175,8 @@ def calc_C1(stiffener_type: str) -> float:
     else:
         raise ValueError(f"Invalid stiffener type provided. Acceptable stiffener types are: {valid_stiffener_types}")
 
-    
+
+@handcalc()    
 def calc_C2(stiffener_type: str) -> float:
     """calculates value of C2 based on Stiffener type
 
@@ -206,7 +197,8 @@ def calc_C2(stiffener_type: str) -> float:
     else:
         raise ValueError(f"Invalid stiffener type provided. Acceptable stiffener types are: {valid_stiffener_types}")
   
-       
+
+@handcalc()       
 def calc_eta(load_case_type: str) -> float:
     """calculates maximum allowable strength factor
 
@@ -226,7 +218,8 @@ def calc_eta(load_case_type: str) -> float:
     else:
         raise ValueError(f"Invalid load case type provided. Acceptable load case types are: {valid_load_case_types}")
 
-    
+
+@handcalc()    
 def calc_kappa(sigma_min:float, sigma_max:float) -> float:
     """calculates ratio of edge stresses
 
@@ -242,7 +235,8 @@ def calc_kappa(sigma_min:float, sigma_max:float) -> float:
         return kappa
     except: ValueError
     
-    
+
+@handcalc()    
 def calc_k_s_tau(alpha:float, C1:float) -> float:
     """calculates boundary dependent constant for shear buckling
 
@@ -257,6 +251,7 @@ def calc_k_s_tau(alpha:float, C1:float) -> float:
     return k_s
     
 
+@handcalc()
 def calc_k_s_sigma_x(C1:float, kappa_x:float) -> float:
     """calculates boundary dependant factor for stress sigma_x (normal to shorter side)
     
@@ -274,6 +269,7 @@ def calc_k_s_sigma_x(C1:float, kappa_x:float) -> float:
     return k_s_sigma_x
 
 
+@handcalc()
 def calc_k_s_sigma_y(C2:float, alpha:float, kappa_y:float) -> float:
     """calculates boundary dependant factor for stress sigma_y (normal to longer side)
     
@@ -295,6 +291,7 @@ def calc_k_s_sigma_y(C2:float, alpha:float, kappa_y:float) -> float:
     return k_s_sigma_y
 
 
+@handcalc()
 def calc_tau_0(sigma_0:float) -> float:
     """calculate shear strength of plate
 
@@ -308,6 +305,7 @@ def calc_tau_0(sigma_0:float) -> float:
     return tau_0
 
 
+@handcalc()
 def calc_stress_E(k_s_stress:float, t:float, s:float, E:float = 2.06e7, nu:float=0.3) -> float:
     """calculate elastic shear buckling stress
 
@@ -325,6 +323,7 @@ def calc_stress_E(k_s_stress:float, t:float, s:float, E:float = 2.06e7, nu:float
     return stress_E
 
 
+@handcalc()
 def calc_stress_C(stress_0:float, stress_E:float, P_r:float = 0.6) -> float:
     """calculate critical buckling stress for edge shear
     Args:
@@ -341,7 +340,9 @@ def calc_stress_C(stress_0:float, stress_E:float, P_r:float = 0.6) -> float:
     else:
         stress_C = stress_0 * (1 - P_r * (1 - P_r) * (stress_0 / stress_E))
         return stress_C
-    
+
+
+@handcalc()    
 def calc_UC_buckling_state_limit(sigma_x_max:float, sigma_y_max:float, tau:float, sigma_C_x:float, sigma_C_y:float, tau_C:float, eta:float) -> float:
     """calculates buckling state limit UC
 

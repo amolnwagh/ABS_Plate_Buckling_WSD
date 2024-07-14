@@ -1,5 +1,6 @@
 import streamlit as st
 import ABS_Plate_Buckling_WSD.calculations.ABS_Plate_Buckling as ABS
+from handcalcs.decorator import handcalc
 
 st.markdown("# ABS Plate Buckling Checks")
 st.markdown("### (WSD Method) - *July 2022 Edition*")
@@ -33,15 +34,29 @@ with st.sidebar:
         sigma_bx = st.number_input("Bending stress normal to shorter side (s): sigma_bx (N/cm^2)",min_value=1e-6)
         sigma_by = st.number_input("Bending stress normal to longer side (l): sigma_by (N/cm^2)",min_value=1e-6)
         tau = st.number_input("Shear stress: tau (N/cm^2)",min_value=1e-6)
-        # sigma_xmax = sigma_ax + sigma_bx
-        # sigma_xmin = sigma_ax - sigma_bx
-        # sigma_ymax = sigma_ay + sigma_by
-        # sigma_ymin = sigma_ay - sigma_by
-        # st.write(f'{sigma_xmax = }')
-        # st.write(f'{sigma_xmin = }')
-        # st.write(f'{sigma_ymax = }')
-        # st.write(f'{sigma_ymin = }')
-        # st.write(f'{tau = }')
 
+my_panel = ABS.Panel(
+    load_case_type= "NORMAL OPERATION",
+    stiffener_type= "ANGLE",
+    s = 60,
+    l = 120,
+    t = 1.2,
+    sigma_0= 23500,
+    sigma_ax= 10000,
+    sigma_ay= 5000,
+    sigma_bx= 2000,
+    sigma_by= 1000,
+    tau = 5000
+)
 
 st.markdown("### Calculation")
+st.latex(my_panel.alpha()[0])
+st.latex(my_panel.sigma_x_max()[0])
+st.latex(my_panel.sigma_x_min()[0])
+st.latex(my_panel.sigma_y_max()[0])
+st.latex(my_panel.sigma_y_min()[0])
+st.latex(my_panel.C1()[0])
+st.latex(my_panel.C2()[0])
+st.latex(my_panel.eta()[0])
+st.latex(my_panel.kappa_x()[0])
+st.latex(my_panel.kappa_x()[0])
