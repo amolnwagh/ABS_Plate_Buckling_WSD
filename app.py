@@ -22,7 +22,7 @@ st.divider()
 st.image(r"figures/typ_stiffened_panel.png","Figure 1: Typical Stiffened Panel")
 st.divider()
 
-st.image(r"figures/loads_on_panel.png","Figure 3: Typical Loads on a Stiffened Panel")
+st.image(r"figures/loads_on_panel.png","Figure 2: Typical Loads on a Stiffened Panel")
 st.divider()
 
 with st.sidebar:
