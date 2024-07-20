@@ -131,7 +131,7 @@ st.markdown(f"###### _Thickness of Panel_ = {t} cm")
 st.markdown(f"###### _Yield Stress_ = {sigma_0} N/cm2")
 
 
-max_alpha = st.slider("Select maximum aspect ratio for the plots:",min_value=1,max_value=100,value=50)
+max_alpha = st.slider("Select maximum aspect ratio for the plots:",min_value=1,max_value=100,value=20)
 no_of_pts = st.slider("Select the number of data points for the plots:",min_value=10,max_value=100,value=50)
 lengths = [s]
 for i in range(1,no_of_pts+1):
