@@ -1,6 +1,6 @@
 import streamlit as st
-import ABS_Plate_Buckling_WSD.calculations.ABS_Plate_Buckling as ABS
-import ABS_Plate_Buckling_WSD.app_module as AM
+import calculations.ABS_Plate_Buckling as ABS
+import app_module as AM
 import plotly.graph_objects as go
 from plotly.validators.scatter.marker import SymbolValidator
 

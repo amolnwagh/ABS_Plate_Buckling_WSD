@@ -1,4 +1,4 @@
-import ABS_Plate_Buckling_WSD.calculations.ABS_Plate_Buckling as ABS
+import calculations.ABS_Plate_Buckling as ABS
 import math
 
 def test_calc_alpha():
