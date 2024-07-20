@@ -1,7 +1,6 @@
 import streamlit as st
 import ABS_Plate_Buckling_WSD.calculations.ABS_Plate_Buckling as ABS
 import ABS_Plate_Buckling_WSD.app_module as AM
-from handcalcs.decorator import handcalc
 
 st.markdown("# ABS Plate Buckling Checks")
 st.markdown("### (WSD Method) - *July 2022 Edition*")
@@ -21,13 +20,13 @@ with st.sidebar:
         s = st.number_input("Shorter side of panel: s (cm)",min_value=1e-6)
         l = st.number_input("Longer side of panel: l (cm)",min_value=s)
         t = st.number_input("Thickness of plate panel: t (cm)",min_value=1e-6)
-        sigma_0_plate = st.number_input("Yield Stress for Plate Panel Material: sigma_0_plate (N/cm2)",min_value=1e-6)
+        sigma_0 = st.number_input("Yield Stress for Plate Panel Material: sigma_0 (N/cm2)",min_value=1e-6)
         E = st.number_input("Young's Modulus of Panel Material: E (N/cm2)",value=2.06e7)
         nu = st.number_input("Poisson's Ratio for Panel Material: nu",value=0.3)
         
     stiffener_inputs = st.expander("Panel Stiffener Details",expanded=False)
     with stiffener_inputs:
-        st.selectbox("Select Stiffener Type", [*ABS.valid_stiffener_types])
+        stiffener_type = st.selectbox("Select Stiffener Type", [*ABS.valid_stiffener_types])
 
     stress_inputs = st.expander("Load & Stress Data (Refer Figure 2)",expanded=False)
     with stress_inputs:
@@ -40,19 +39,19 @@ with st.sidebar:
 
 
 my_panel = ABS.Panel(
-    load_case_type = "NORMAL OPERATION",
-    stiffener_type = "ANGLE",
-    s = 60,
-    l = 120,
-    t = 1.2,
-    sigma_ax = 10000,
-    sigma_ay = 5000,
-    sigma_bx = 2000,
-    sigma_by = 1000,
-    tau = 5000,
-    sigma_0 = 23500,
-    E = 2.06e7,
-    nu = 0.3
+    load_case_type = load_case_type,
+    stiffener_type = stiffener_type,
+    s = s,
+    l = l,
+    t = t,
+    sigma_ax = sigma_ax,
+    sigma_ay = sigma_ay,
+    sigma_bx = sigma_bx,
+    sigma_by = sigma_by,
+    tau = tau,
+    sigma_0 = sigma_0,
+    E = E,
+    nu = nu
 )
 
 
