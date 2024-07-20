@@ -1,6 +1,8 @@
 import streamlit as st
 import ABS_Plate_Buckling_WSD.calculations.ABS_Plate_Buckling as ABS
 import ABS_Plate_Buckling_WSD.app_module as AM
+import plotly.graph_objects as go
+from plotly.validators.scatter.marker import SymbolValidator
 
 st.markdown("# ABS Plate Buckling Checks")
 st.markdown("### (WSD Method) - *July 2022 Edition*")
@@ -119,4 +121,115 @@ with detail_calc:
     st.write(f"sigma_C_x = {round(my_panel.sigma_C_x(),3)} N/cm2")
     st.write(f"sigma_C_y = {round(my_panel.sigma_C_y(),3)} N/cm2")
     st.write(f"UC_buckling_state_limit = {round(my_panel.UC_buckling_state_limit(),3)}")
-     
+
+
+st.markdown(f"### Plots: Allowable Buckling Stresses v/s Aspect Ratio of the Plate Panel")
+st.markdown(f"#### Parameters:")
+st.markdown(f"###### _Stiffener Type_ = {stiffener_type}")
+st.markdown(f"###### _Shorter Side of Panel_ = {s} cm")
+st.markdown(f"###### _Thickness of Panel_ = {t} cm")
+st.markdown(f"###### _Yield Stress_ = {sigma_0} N/cm2")
+
+
+max_alpha = st.slider("Select maximum aspect ratio for the plots:",min_value=1,max_value=100,value=50)
+no_of_pts = st.slider("Select the number of data points for the plots:",min_value=10,max_value=100,value=50)
+lengths = [s]
+for i in range(1,no_of_pts+1):
+    lengths.append(s + (i/no_of_pts)*((max_alpha-1)*s))
+
+
+tau_C_s = []
+sigma_C_x_s = []
+sigma_C_y_s = []
+alphas = []
+UCs = []
+
+for length in lengths:
+    panel = ABS.Panel(
+        load_case_type = load_case_type,
+        stiffener_type = stiffener_type,
+        s = s,
+        l = length,
+        t = t,
+        sigma_ax = sigma_ax,
+        sigma_ay = sigma_ay,
+        sigma_bx = sigma_bx,
+        sigma_by = sigma_by,
+        tau = tau,
+        sigma_0 = sigma_0,
+        E = E,
+        nu = nu
+    )
+    alphas.append(panel.alpha())
+    tau_C_s.append(panel.tau_C())
+    sigma_C_x_s.append(panel.sigma_C_x())
+    sigma_C_y_s.append(panel.sigma_C_y())
+    UCs.append(panel.UC_buckling_state_limit())
+
+
+fig1 = go.Figure()
+fig1.add_scatter(x=alphas, y=tau_C_s)
+fig1.layout.title.text = "tau_C v/s alpha"
+fig1.layout.xaxis.title = "alpha = aspect ratio = (long side/short side)"
+fig1.layout.yaxis.title = "tau_C (N/cm2)"
+
+fig2 = go.Figure()
+fig2.add_scatter(x=alphas, y=sigma_C_x_s)
+fig2.layout.title.text = "sigma_C_x v/s alpha"
+fig2.layout.xaxis.title = "alpha = aspect ratio = (long side/short side)"
+fig2.layout.yaxis.title = "sigma_C_x (N/cm2)"
+
+fig3 = go.Figure()
+fig3.add_scatter(x=alphas, y=sigma_C_y_s)
+fig3.layout.title.text = "sigma_C_y v/s alpha"
+fig3.layout.xaxis.title = "alpha = aspect ratio = (long side/short side)"
+fig3.layout.yaxis.title = "sigma_C_y (N/cm2)"
+
+fig4 = go.Figure()
+fig4.add_scatter(x=alphas, y=tau_C_s, name="tau_C")
+fig4.add_scatter(x=alphas, y=sigma_C_x_s, name="sigma_C_x")
+fig4.add_scatter(x=alphas, y=sigma_C_y_s,name="sigma_C_y")
+fig4.layout.title.text = "Allowable Stresses v/s alpha"
+fig4.layout.xaxis.title = "alpha = aspect ratio = (long side/short side)"
+fig4.layout.yaxis.title = "Allowable Stress (N/cm2)"
+
+raw_symbols = SymbolValidator().values
+symbols = []
+for i in range(0,len(raw_symbols),3):
+    name = raw_symbols[i+2]
+    symbols.append(raw_symbols[i])
+
+fig5 = go.Figure()
+fig5.add_scatter(x=alphas, y=UCs, name = "UCs for all aspect ratios")
+fig5.add_trace(
+    go.Scatter(
+        mode="markers",
+        x=[my_panel.alpha()],
+        y=[my_panel.UC_buckling_state_limit()],
+        name = "UC for current aspect ratio",
+        marker_symbol = "asterisk",
+        marker=dict(
+            color='Purple',
+            size=10,
+            line=dict(
+                color='Purple',
+                width=1)
+            )
+        )
+)
+# fig5.add_scatter(x=[my_panel.alpha()],y=[my_panel.UC_buckling_state_limit()], name = "UC for current aspect ratio")
+fig5.layout.title.text = "Buckling State Limit UC v/s alpha"
+fig5.layout.xaxis.title = "alpha = aspect ratio = (long side/short side)"
+fig5.layout.yaxis.title = "Buckling State Limit UC"
+
+st.divider()
+st.plotly_chart(fig1)
+st.divider()
+st.plotly_chart(fig2)
+st.divider()
+st.plotly_chart(fig3)
+st.divider()
+st.plotly_chart(fig4)
+st.divider()
+st.plotly_chart(fig5)
+st.divider()
